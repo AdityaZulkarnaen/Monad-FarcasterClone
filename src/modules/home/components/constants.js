@@ -1,10 +1,3 @@
-export const DEMO_ACCOUNT = {
-  identifier: "demo@mirage.local",
-  password: "12345678",
-  displayName: "Demo mirage",
-  handle: "@demomirage",
-};
-
 export const SIDEBAR_ITEMS = [
   "Home",
   "Notifications",

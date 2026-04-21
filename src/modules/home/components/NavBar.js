@@ -38,7 +38,7 @@ export default function NavBar({ items, isLoggedIn, onLogout }) {
             href="/auth"
             className="block w-full rounded-full border border-white/15 bg-white/5 px-4 py-2 text-center text-sm font-semibold text-zinc-200 transition hover:bg-white/10"
           >
-            Login
+            Connect Wallet
           </a>
         )}
       </div>

@@ -59,7 +59,7 @@ export default function TrendingSection({
           <div className="grid gap-3 rounded-xl border border-white/10 bg-black/40 p-4">
             <p className="text-sm text-zinc-400">Wallet Connected as</p>
             <p className="text-base font-bold text-white">{currentUser.displayName}</p>
-            <p className="font-mono text-sm text-zinc-300">{currentUser.handle}</p>
+            <p className="font-mono text-sm text-zinc-300">{currentUser.address}</p>
 
             <div className="mt-2">
               <p className="text-xs uppercase tracking-wider text-emerald-300">USDC Balance</p>
@@ -70,13 +70,13 @@ export default function TrendingSection({
           <div className="grid gap-3 rounded-xl border border-white/10 bg-black/40 p-4">
             <p className="text-base font-semibold text-white">Wallet</p>
             <p className="text-sm leading-relaxed text-zinc-400">
-              Login dulu untuk melihat wallet demo dan saldo USDC.
+              Connect wallet dulu untuk autentikasi Web3 di Monad.
             </p>
             <Link
               href="/auth"
               className="mt-1 inline-flex items-center justify-center rounded-xl bg-linear-to-br from-violet-500 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
             >
-              Login
+              Connect Wallet
             </Link>
           </div>
         )}

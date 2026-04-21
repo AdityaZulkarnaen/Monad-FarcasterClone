@@ -4,32 +4,63 @@ import { useEffect, useState } from "react";
 import HeroSection from "@/modules/home/components/HeroSection";
 import NavBar from "@/modules/home/components/NavBar";
 import TrendingSection from "@/modules/home/components/TrendingSection";
-import { CHANNELS, DEMO_ACCOUNT, FEED_POSTS, RIGHT_LINKS, SIDEBAR_ITEMS } from "@/modules/home/components/constants";
+import { CHANNELS, FEED_POSTS, RIGHT_LINKS, SIDEBAR_ITEMS } from "@/modules/home/components/constants";
+
+function toWalletUser(address) {
+  return {
+    displayName: "Wallet User",
+    handle: `${address.slice(0, 6)}...${address.slice(-4)}`,
+    address,
+  };
+}
 
 export default function HomePage() {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    const rawSession = window.localStorage.getItem("fc-demo-session");
-    if (!rawSession) {
-      return;
+    let isActive = true;
+
+    async function loadSession() {
+      try {
+        const response = await fetch("/api/auth/me", {
+          method: "GET",
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          if (isActive) {
+            setCurrentUser(null);
+          }
+          return;
+        }
+
+        const payload = await response.json();
+        const address = payload?.user?.address;
+
+        if (!address || !isActive) {
+          return;
+        }
+
+        setCurrentUser(toWalletUser(address));
+      } catch {
+        if (isActive) {
+          setCurrentUser(null);
+        }
+      }
     }
 
-    try {
-      const parsed = JSON.parse(rawSession);
-      if (parsed?.identifier === DEMO_ACCOUNT.identifier) {
-        setCurrentUser({
-          displayName: DEMO_ACCOUNT.displayName,
-          handle: DEMO_ACCOUNT.handle,
-        });
-      }
-    } catch {
-      window.localStorage.removeItem("fc-demo-session");
-    }
+    loadSession();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
-  function handleLogout() {
-    window.localStorage.removeItem("fc-demo-session");
+  async function handleLogout() {
+    await fetch("/api/auth/logout", {
+      method: "POST",
+    });
+
     setCurrentUser(null);
   }
 
