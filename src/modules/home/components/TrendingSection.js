@@ -1,5 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { ChevronRight, Search } from 'lucide-react';
+import { useMemo } from "react";
+import { useBalance } from "wagmi";
+import { MONAD_CHAIN_ID } from "@/lib/auth/monad-chain";
 
 
 export default function TrendingSection({
@@ -7,6 +12,35 @@ export default function TrendingSection({
   links,
   currentUser,
 }) {
+  const walletAddress = currentUser?.address;
+
+  const {
+    data: walletBalance,
+    isPending: isBalanceLoading,
+    isError: isBalanceError,
+  } = useBalance({
+    address: walletAddress,
+    chainId: MONAD_CHAIN_ID,
+    query: {
+      enabled: Boolean(walletAddress),
+      refetchInterval: 15000,
+    },
+  });
+
+  const formattedBalance = useMemo(() => {
+    if (!walletBalance) {
+      return null;
+    }
+
+    const decimals = walletBalance.decimals;
+    const raw = Number(walletBalance.value) / 10 ** decimals;
+
+    return new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 6,
+    }).format(raw);
+  }, [walletBalance]);
+
   return (
     <aside className="space-y-4 fixed mt-4">
       <div className="rounded-xl flex flex-row items-center border border-white/10 bg-[#0b0b0f] p-2.5">
@@ -62,8 +96,18 @@ export default function TrendingSection({
             <p className="font-mono text-sm text-zinc-300">{currentUser.address}</p>
 
             <div className="mt-2">
-              <p className="text-xs uppercase tracking-wider text-emerald-300">USDC Balance</p>
-              <p className="mt-1 text-2xl font-semibold text-emerald-200">1,250.00 USDC</p>
+              <p className="text-xs uppercase tracking-wider text-emerald-300">
+                {walletBalance?.symbol ? `${walletBalance.symbol} Balance` : "Wallet Balance"}
+              </p>
+              <p className="mt-1 text-2xl font-semibold text-emerald-200">
+                {isBalanceLoading
+                  ? "Loading..."
+                  : isBalanceError
+                    ? "Gagal ambil balance"
+                    : formattedBalance && walletBalance?.symbol
+                      ? `${formattedBalance} ${walletBalance.symbol}`
+                      : "Balance tidak tersedia"}
+              </p>
             </div>
           </div>
         ) : (
