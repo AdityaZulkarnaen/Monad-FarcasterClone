@@ -37,7 +37,7 @@ export default function LoginCard({
             type="email"
             value={identifier}
             onChange={(event) => onIdentifierChange(event.target.value)}
-            placeholder="demo@farcaster.local"
+            placeholder="demo@mirage.local"
             autoComplete="email"
             required
             className="w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-white outline-none ring-violet-300/40 placeholder:text-zinc-500 focus:ring-2"
@@ -71,7 +71,7 @@ export default function LoginCard({
             Demo account:
             <br />
             <span className="font-mono text-[0.78rem] text-zinc-300">
-              demo@farcaster.local / 12345678
+              demo@mirage.local / 12345678
             </span>
           </p>
         </form>

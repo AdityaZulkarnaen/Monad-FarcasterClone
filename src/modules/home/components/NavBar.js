@@ -2,8 +2,8 @@ export default function NavBar({ items, isLoggedIn, onLogout }) {
   return (
     <aside className="sticky top-0 hidden h-screen border-r border-white/10 p-4 lg:block">
       <a href="#" className="mb-4 inline-flex items-center gap-3" aria-label="Farcaster Clone Home">
-        <span className="grid h-7 w-7 place-items-center rounded-md bg-linear-to-br from-violet-500 to-indigo-700 text-xs font-semibold text-white">
-          n
+        <span className="grid h-7 w-7 place-items-center rounded-md text-xl font-semibold text-white">
+          Mirag3
         </span>
       </a>
 
@@ -35,7 +35,7 @@ export default function NavBar({ items, isLoggedIn, onLogout }) {
           </button>
         ) : (
           <a
-            href="#login"
+            href="/auth"
             className="block w-full rounded-full border border-white/15 bg-white/5 px-4 py-2 text-center text-sm font-semibold text-zinc-200 transition hover:bg-white/10"
           >
             Login

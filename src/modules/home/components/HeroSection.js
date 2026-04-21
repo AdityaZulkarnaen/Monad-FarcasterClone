@@ -1,13 +1,14 @@
+import { Heart, MessageCircle, Repeat2 } from "lucide-react";
 export default function HeroSection({ posts }) {
   return (
     <section className="overflow-hidden rounded-2xl border border-white/10 bg-[#0b0b0f]">
-      <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+      <div className="flex items-center justify-between px-5 py-4">
         <h1 className="text-3xl font-semibold text-white">Home</h1>
         <button
           type="button"
-          className="rounded-full bg-linear-to-br from-violet-500 to-indigo-600 px-5 py-2 text-sm font-semibold text-white"
+          className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-semibold text-white"
         >
-          Cast
+          Post
         </button>
       </div>
 
@@ -43,9 +44,18 @@ export default function HeroSection({ posts }) {
                 ) : null}
 
                 <div className="mt-4 flex items-center gap-8 text-sm text-zinc-500">
-                  <span>reply {post.replies}</span>
-                  <span>recast {post.recasts}</span>
-                  <span>like {post.likes}</span>
+                  <span className="flex items-center gap-1">
+                    <Heart className="h-4 w-4" />
+                    {post.likes}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Repeat2 className="h-4 w-4" />
+                    {post.recasts}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <MessageCircle className="h-4 w-4" />
+                    {post.replies}
+                  </span>
                 </div>
               </div>
             </div>
