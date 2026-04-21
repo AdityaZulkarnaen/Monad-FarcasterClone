@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -23,6 +23,7 @@ export default function AuthPage() {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [connectorAvailability, setConnectorAvailability] = useState({});
 
   const walletAddressLabel = useMemo(() => {
     if (!address) {
@@ -32,13 +33,108 @@ export default function AuthPage() {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   }, [address]);
 
+  const displayedConnectors = useMemo(() => {
+    const hasSpecificInjected = connectors.some((connector) => connector.name !== "Injected");
+    const baseConnectors = hasSpecificInjected
+      ? connectors.filter((connector) => connector.name !== "Injected")
+      : connectors;
+
+    const unique = [];
+    const seenNames = new Set();
+
+    for (const connector of baseConnectors) {
+      const normalizedName = connector.name.trim().toLowerCase();
+
+      if (seenNames.has(normalizedName)) {
+        continue;
+      }
+
+      seenNames.add(normalizedName);
+      unique.push(connector);
+    }
+
+    return unique;
+  }, [connectors]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    async function resolveAvailability() {
+      const pairs = await Promise.all(
+        displayedConnectors.map(async (connector) => {
+          try {
+            const provider = await connector.getProvider();
+
+            if (
+              connector.name === "Brave Wallet" &&
+              typeof navigator !== "undefined" &&
+              typeof navigator.brave !== "undefined"
+            ) {
+              return [connector.uid, Boolean(provider || window.ethereum)];
+            }
+
+            return [connector.uid, Boolean(provider)];
+          } catch {
+            if (
+              connector.name === "Brave Wallet" &&
+              typeof navigator !== "undefined" &&
+              typeof navigator.brave !== "undefined"
+            ) {
+              return [connector.uid, Boolean(window.ethereum)];
+            }
+
+            return [connector.uid, false];
+          }
+        }),
+      );
+
+      if (!isActive) {
+        return;
+      }
+
+      setConnectorAvailability(Object.fromEntries(pairs));
+    }
+
+    resolveAvailability();
+
+    return () => {
+      isActive = false;
+    };
+  }, [displayedConnectors]);
+
+  function getInstallUrl(connectorName) {
+    if (connectorName === "Brave Wallet") {
+      return "https://brave.com/wallet/";
+    }
+
+    if (connectorName === "MetaMask") {
+      return "https://metamask.io/download/";
+    }
+
+    return null;
+  }
+
   async function handleConnect(connector) {
     setErrorMessage("");
 
+    const isAvailable = connectorAvailability[connector.uid];
+    const installUrl = getInstallUrl(connector.name);
+
+    if (isAvailable === false && installUrl) {
+      window.open(installUrl, "_blank", "noopener,noreferrer");
+      setErrorMessage(`${connector.name} belum terdeteksi. Silakan install extension wallet terlebih dulu.`);
+      return;
+    }
+
     try {
       await connectAsync({ connector });
-    } catch {
-      setErrorMessage("Koneksi wallet dibatalkan atau gagal.");
+    } catch (error) {
+      const detail =
+        (typeof error?.shortMessage === "string" && error.shortMessage) ||
+        (typeof error?.message === "string" && error.message) ||
+        "Koneksi wallet dibatalkan atau gagal.";
+
+      setErrorMessage(`Gagal connect ${connector.name}: ${detail}`);
     }
   }
 
@@ -129,7 +225,13 @@ export default function AuthPage() {
         <p className="mt-2 text-sm text-zinc-400">Connect wallet, sign challenge, lalu session backend aktif otomatis.</p>
 
         <div className="mt-6 grid gap-3">
-          {connectors.map((connector) => (
+          {displayedConnectors.map((connector) => (
+            (() => {
+              const isAvailable = connectorAvailability[connector.uid] ?? true;
+              const installUrl = getInstallUrl(connector.name);
+              const shouldShowInstall = !isAvailable && Boolean(installUrl);
+
+              return (
             <button
               key={connector.uid}
               type="button"
@@ -137,9 +239,17 @@ export default function AuthPage() {
               disabled={isConnecting || isConnected}
               className="rounded-xl border border-white/10 bg-black/30 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isConnecting ? "Connecting..." : `Connect ${connector.name}`}
+              {isConnecting
+                ? "Connecting..."
+                : shouldShowInstall
+                  ? `Install ${connector.name}`
+                  : `Connect ${connector.name}`}
             </button>
+              );
+            })()
           ))}
+
+          <p className="text-xs text-zinc-500">Monad diprioritaskan: setelah connect, app akan meminta switch ke chain Monad otomatis.</p>
 
           {isConnected ? (
             <div className="grid gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">

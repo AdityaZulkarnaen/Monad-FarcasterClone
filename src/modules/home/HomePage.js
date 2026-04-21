@@ -66,7 +66,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#06070a] text-zinc-100">
-      <main className="mx-auto grid w-full max-w-340 grid-cols-1 gap-4 px-3 py-3 lg:grid-cols-[250px_1fr_420px]">
+      <main className="mx-auto grid w-full max-w-340 grid-cols-1 px-3 pb-3 lg:grid-cols-[250px_1fr_420px]">
         <NavBar items={SIDEBAR_ITEMS} isLoggedIn={Boolean(currentUser)} onLogout={handleLogout} />
 
         <section id="discover" className="min-w-0">

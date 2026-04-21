@@ -8,7 +8,7 @@ export default function TrendingSection({
   currentUser,
 }) {
   return (
-    <aside className="space-y-4 fixed">
+    <aside className="space-y-4 fixed mt-4">
       <div className="rounded-xl flex flex-row items-center border border-white/10 bg-[#0b0b0f] p-2.5">
         <Search className="h-6 w-6 text-zinc-400" />
         <input className="flex items-center justify-between gap-2 px-3 py-2 w-full text-sm text-zinc-400 focus:outline-none" type="text" placeholder="Search casts, channels and users" >

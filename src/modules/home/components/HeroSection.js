@@ -1,8 +1,9 @@
 import { Heart, MessageCircle, Repeat2 } from "lucide-react";
 export default function HeroSection({ posts }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-white/10 bg-[#0b0b0f]">
-      <div className="flex items-center justify-between px-5 py-4">
+    <section className="overflow-hidden mr-4 border-r border-white/10">
+      <div className="">
+        <div className="flex items-center justify-between px-5 py-4">
         <h1 className="text-3xl font-semibold text-white">Home</h1>
         <button
           type="button"
@@ -13,13 +14,15 @@ export default function HeroSection({ posts }) {
       </div>
 
       <div className="grid grid-cols-2 border-b border-white/10">
-        <button type="button" className="border-b-2 border-violet-500 px-4 py-3 text-sm font-semibold text-white">
+        <button type="button" className="border-b-2 border-indigo-600 px-4 py-3 text-sm font-semibold text-white">
           Home
         </button>
         <button type="button" className="px-4 py-3 text-sm font-semibold text-zinc-500">
           Following
         </button>
       </div>
+      </div>
+      
 
       <div>
         {posts.map((post) => (
